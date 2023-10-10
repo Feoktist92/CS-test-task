@@ -1,95 +1,132 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client"
+import React, { useRef, useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import axios from 'axios';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+    title: {
+      display: true,
+      text: 'Статистика',
+    },
+  },
+};
 
 export default function Home() {
+  const selectRef = useRef<HTMLSelectElement>(null)
+  const [items, setItems] = useState([
+    {finance: {
+      periods: [
+        {graph: {
+          year: {},
+          half_year: {},
+          month: {}
+        }}]
+  }}]);
+  const [selectedOption, setSelectedOption] = useState( 'За последний год');
+
+  const [chartData, setChartData] = useState<{
+    labels: string[];
+    datasets: {
+      label: string;
+      data: number[];
+      backgroundColor: string;
+    }[];
+  }>({
+    labels: [],
+    datasets: [],
+  });
+
+
+  React.useEffect(()=> {
+    axios.get('https://6524dab7ea560a22a4ea2cbf.mockapi.io/tesk-task').then(res => setItems(res.data))
+  },[])
+
+ const year = items[0].finance.periods[0].graph.year;
+ const halfyear = items[0].finance.periods[0].graph.half_year;
+ const month = items[0].finance.periods[0].graph.month;
+
+
+ useEffect(() => {
+  switch (selectedOption) {
+    case 'За последний год':
+      setChartData({
+        labels: Object.keys(year),
+        datasets: [
+          {
+            label: selectedOption,
+            data: Object.values(year).map((value) => Number(value)),
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          },
+        ],
+      });
+      break;
+    case 'За последние полгода':
+      setChartData({
+        labels: Object.keys(halfyear),
+        datasets: [
+          {
+            label: selectedOption,
+            data: Object.values(halfyear).map((value) => Number(value)),
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          },
+        ],
+      });
+      break;
+    case 'За последний месяц':
+      setChartData({
+        labels: Object.keys(month),
+        datasets: [
+          {
+            label: selectedOption,
+            data: Object.values(month).map((value) => Number(value)),
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          },
+        ],
+      });
+      break;
+    default:
+      setChartData({
+        labels: [],
+        datasets: [],
+      });
+      break;
+  }
+}, [selectedOption, year, halfyear, month]);
+
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+  <div className='wrapper'>
+       <select
+        name="date"
+        ref={selectRef}
+        onChange={(e) => setSelectedOption(e.target.value)}
+      >
+        <option value="За последний год">За последний год</option>
+        <option value="За последние полгода">За последние полгода</option>
+        <option value="За последний месяц">За последний месяц</option>
+      </select>
+      {Object.values(year)?.length > 0 && <Bar options={options} data={chartData} />} 
+  </div>)
 }
