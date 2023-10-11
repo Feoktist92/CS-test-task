@@ -186,7 +186,8 @@ export default function Home() {
       </select>
       </div>
       {Object.values(year)?.length > 0 && <Bar
-       //@ts-ignore options={options} 
+       //@ts-ignore
+       options={options} 
        data={chartData}/>} 
       </div>
   )
