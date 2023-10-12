@@ -17,6 +17,8 @@ body {
 }
 select {
     width: 100%;
+    -webkit-appearance: unset;
+    -moz-appearance: unset;
     appearance: unset;
     outline: none;
     cursor: pointer;
