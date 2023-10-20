@@ -46,5 +46,5 @@ select {
 canvas {
     background-color: rgba(255, 0, 245, 0.05);
     border-radius: 27px;
-    padding: 40px;
+    padding: 30px;
 }
