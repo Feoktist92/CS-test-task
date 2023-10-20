@@ -86,7 +86,7 @@ export default function Home() {
         ticks: {
           color: '#000',
           font: {
-            size: 20,
+            size: 18,
             family: 'Manrope',
           },
           maxRotation: 0,
@@ -99,7 +99,7 @@ export default function Home() {
         ticks: {
           color: '#000',
           font: {
-            size: 20,
+            size: 18,
             family: 'Manrope',
           },
         },
@@ -128,7 +128,7 @@ export default function Home() {
             data: Object.values(year).map((value) => Number(value)),
             backgroundColor: '#000AFF',
             borderRadius: 4,
-            barThickness: 16,
+            barThickness: 18,
           },
         ],
       });
@@ -142,7 +142,7 @@ export default function Home() {
             data: Object.values(halfyear).map((value) => Number(value)),
             backgroundColor: '#000AFF',
             borderRadius: 4,
-            barThickness: 16,
+            barThickness: 20,
           },
         ],
       });
